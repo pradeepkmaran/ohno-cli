@@ -1,0 +1,21 @@
+#!/usr/bin/env bash
+set -e
+
+# Resolve real path even if symlinked
+SOURCE="${BASH_SOURCE[0]}"
+while [ -L "$SOURCE" ]; do
+  DIR="$(cd -P "$(dirname "$SOURCE")" && pwd)"
+  SOURCE="$(readlink "$SOURCE")"
+  [[ $SOURCE != /* ]] && SOURCE="$DIR/$SOURCE"
+done
+SCRIPT_DIR="$(cd -P "$(dirname "$SOURCE")" && pwd)"
+
+VENV="$SCRIPT_DIR/venv"
+PYTHON="$VENV/bin/python"
+
+if [[ ! -x "$PYTHON" ]]; then
+  echo "❌ venv python not found at $PYTHON"
+  exit 1
+fi
+
+exec "$PYTHON" "$SCRIPT_DIR/ohno.py" "$@"
